@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <title>BinaryGame — Learn Binary the Fun Way</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+
+<!-- ═══ SCREEN: HOME ═══ -->
+<div class="screen active" id="screen-home">
+  <div class="home-wrap">
+    <div class="logo-block">
+      <div class="logo-bits">
+        <span class="lb one">1</span><span class="lb zero">0</span><span class="lb one">1</span>
+        <span class="lb zero">0</span><span class="lb one">1</span><span class="lb one">1</span>
+      </div>
+      <h1 class="game-title">BinaryGame</h1>
+      <p class="game-sub">Master binary numbers before the clock runs out</p>
+    </div>
+
+    <div class="mode-grid">
+      <button class="mode-card" data-mode="classic">
+        <span class="mode-icon">🎯</span>
+        <span class="mode-name">Classic</span>
+        <span class="mode-desc">Decimal → flip bits to match. Race the clock.</span>
+      </button>
+      <button class="mode-card" data-mode="reverse">
+        <span class="mode-icon">🔁</span>
+        <span class="mode-name">Reverse</span>
+        <span class="mode-desc">Binary shown → type the decimal value.</span>
+      </button>
+      <button class="mode-card" data-mode="ip">
+        <span class="mode-icon">🌐</span>
+        <span class="mode-name">IP Mode</span>
+        <span class="mode-desc">Convert IP octets to binary, one at a time.</span>
+      </button>
+      <button class="mode-card" data-mode="blitz">
+        <span class="mode-icon">⚡</span>
+        <span class="mode-name">Blitz</span>
+        <span class="mode-desc">60 seconds. No mercy. Max score wins.</span>
+      </button>
+    </div>
+
+    <div class="diff-row">
+      <span class="diff-label">Difficulty</span>
+      <div class="diff-btns">
+        <button class="diff-btn active" data-diff="easy">Easy</button>
+        <button class="diff-btn" data-diff="medium">Medium</button>
+        <button class="diff-btn" data-diff="hard">Hard</button>
+      </div>
+    </div>
+
+    <div class="hiscore-row" id="hiScoreRow">
+      <span class="hs-label">Best score</span>
+      <span class="hs-val" id="hiScoreDisplay">—</span>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ SCREEN: GAME ═══ -->
+<div class="screen" id="screen-game">
+  <header class="game-header">
+    <button class="hdr-back" id="backBtn">← Menu</button>
+    <div class="hdr-stats">
+      <div class="stat-pill">
+        <span class="stat-icon">⏱</span>
+        <span class="stat-val" id="timerDisplay">30</span>
+      </div>
+      <div class="stat-pill">
+        <span class="stat-icon">✦</span>
+        <span class="stat-val" id="scoreDisplay">0</span>
+      </div>
+      <div class="stat-pill">
+        <span class="stat-icon">🔥</span>
+        <span class="stat-val" id="streakDisplay">0</span>
+      </div>
+    </div>
+  </header>
+
+  <div class="progress-bar-wrap">
+    <div class="progress-bar" id="progressBar"></div>
+  </div>
+
+  <!-- Classic / Blitz mode -->
+  <div class="game-area" id="area-classic">
+    <div class="challenge-label" id="challengeLabel">Convert to binary:</div>
+    <div class="target-number" id="targetNumber">—</div>
+
+    <div class="bit-row" id="bitRow">
+      <!-- 8 bit buttons injected by JS -->
+    </div>
+
+    <div class="power-row">
+      <span class="pw">128</span><span class="pw">64</span><span class="pw">32</span>
+      <span class="pw">16</span><span class="pw">8</span><span class="pw">4</span>
+      <span class="pw">2</span><span class="pw">1</span>
+    </div>
+
+    <div class="running-sum" id="runningSum">Current value: <strong>0</strong></div>
+    <div class="feedback" id="feedback"></div>
+    <button class="submit-btn" id="submitBtn">Submit</button>
+  </div>
+
+  <!-- Reverse mode -->
+  <div class="game-area hidden" id="area-reverse">
+    <div class="challenge-label">What decimal is this?</div>
+    <div class="binary-display" id="binaryDisplay">00000000</div>
+    <div class="power-row">
+      <span class="pw">128</span><span class="pw">64</span><span class="pw">32</span>
+      <span class="pw">16</span><span class="pw">8</span><span class="pw">4</span>
+      <span class="pw">2</span><span class="pw">1</span>
+    </div>
+    <input class="dec-input" id="reverseInput" type="number" min="0" max="255" placeholder="0–255" autocomplete="off"/>
+    <div class="feedback" id="feedbackR"></div>
+    <button class="submit-btn" id="submitBtnR">Submit</button>
+  </div>
+
+  <!-- IP mode -->
+  <div class="game-area hidden" id="area-ip">
+    <div class="challenge-label">Convert this IP octet to binary:</div>
+    <div class="ip-display" id="ipDisplay">
+      <span class="ip-oct" id="ipOct0">192</span>.<span class="ip-oct" id="ipOct1">168</span>.<span class="ip-oct" id="ipOct2">1</span>.<span class="ip-oct active-oct" id="ipOct3">1</span>
+    </div>
+    <div class="ip-question">What is <span class="ip-hl" id="ipTarget">1</span> in binary?</div>
+    <div class="bit-row" id="bitRowIP"></div>
+    <div class="power-row">
+      <span class="pw">128</span><span class="pw">64</span><span class="pw">32</span>
+      <span class="pw">16</span><span class="pw">8</span><span class="pw">4</span>
+      <span class="pw">2</span><span class="pw">1</span>
+    </div>
+    <div class="running-sum" id="runningSumIP">Current value: <strong>0</strong></div>
+    <div class="feedback" id="feedbackIP"></div>
+    <button class="submit-btn" id="submitBtnIP">Submit Octet</button>
+  </div>
+</div>
+
+<!-- ═══ SCREEN: RESULT ═══ -->
+<div class="screen" id="screen-result">
+  <div class="result-wrap">
+    <div class="result-emoji" id="resultEmoji">🎉</div>
+    <h2 class="result-title" id="resultTitle">Round Over</h2>
+    <div class="result-score-block">
+      <div class="rs-row"><span>Score</span><span class="rs-val" id="finalScore">0</span></div>
+      <div class="rs-row"><span>Best streak</span><span class="rs-val" id="finalStreak">0</span></div>
+      <div class="rs-row"><span>Correct</span><span class="rs-val" id="finalCorrect">0</span></div>
+      <div class="rs-row"><span>Time bonus</span><span class="rs-val" id="finalBonus">+0</span></div>
+    </div>
+    <div class="pb-row" id="pbRow" hidden>🏆 New personal best!</div>
+    <div class="result-btns">
+      <button class="play-again-btn" id="playAgainBtn">Play Again</button>
+      <button class="menu-btn" id="menuBtn">Menu</button>
+    </div>
+  </div>
+</div>
+
+<script src="game.js"></script>
+</body>
+</html>
